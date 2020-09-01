@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/curry2
+    username: postgres
+    password: postgres
+      mail:    host: smtp.gmail.com
+    port: 587
+    username: #メールアドレス
+    password: #アプリパスワード
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.ssl.trust: smtp.gmail.com

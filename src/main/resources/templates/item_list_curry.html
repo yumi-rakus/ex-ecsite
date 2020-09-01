@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ラクラクカリー</title>
+<link th:href="@{/css/bootstrap.css}" rel="stylesheet">
+<link th:href="@{/css/curry.css}" rel="stylesheet">
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body style="text-align: center">
+	<div class="container">
+		<div th:include="fragment_part::frag_nav"></div>
+
+		<!-- search form -->
+		<div class="row">
+			<div class="col-lg-offset-3 col-lg-6 col-md-offset-2 col-md-8 col-sm-10 col-xs-12">
+
+				<form th:action="@{/search}" th:object="${itemSearchForm}" method="post" class="form-horizontal">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<div class="panel-title">商品を検索する</div>
+						</div>
+						<div class="panel-body">
+
+							<div class="form-group">
+								<label for="code" class="control-label col-sm-2">商品名</label>
+								<div class="col-sm-9">
+									<input type="text" th:field="*{searchName}" id="search" autocomplete="on" list="searchName" class="form-control input-sm" />
+									<datalist id="searchName"></datalist>
+								</div>
+							</div>
+							<div class="text-center">
+								<button type="submit" value="検索" class="btn btn-primary">検索</button>
+								<button type="reset" value="クリア" class="btn btn-default">クリア</button>
+							</div>
+
+						</div>
+					</div>
+					<div class="col-sm-5">
+						<select th:field="*{soting}" class="form-control">
+							<option value=1>価格が安い順</option>
+							<option value=2>価格が高い順</option>
+							<!-- <option value=3>名前順</option> -->
+						</select>
+					</div>
+					<button type="submit" class="btn btn-primary">並び替え</button>
+
+				</form>
+			</div>
+		</div>
+
+		<label th:text="${searchResult}" style="color: red"></label>
+		<!-- table -->
+		<div class="row">
+			<div class="table-responsive col-lg-offset-1 col-lg-10 col-md-offset-1 col-md-10 col-sm-10 col-xs-12">
+				<table class="table table-striped item-list-table">
+					<tbody>
+						<th:block th:each="item, stat : ${itemList}">
+							<th:block th:if="${stat.index % 3 == 0}">
+								<tr>
+							</th:block>
+
+							<th>
+								<a th:href="@{'/showDetail?id=' + ${item.id}}">
+									<img th:src="@{'/img/' + ${item.imagePath}}" class="img-responsive img-rounded item-img-center" width="200" height="600">
+								</a>
+								<br>
+								<a th:href="@{'/showDetail?id=' + ${item.id}}" th:text="${item.name}">じゃがバターベーコン</a>
+								<br>
+								<span class="price">&nbsp;М&nbsp;</span>
+								&nbsp;&nbsp;
+								<span th:text="${#numbers.formatInteger(item.priceM, 1, 'COMMA') + '円（税抜）'}">1,380円(税抜)</span>
+								<br>
+								<span class="price">&nbsp;Ｌ</span>
+								&nbsp;&nbsp;
+								<span th:text="${#numbers.formatInteger(item.priceL, 1, 'COMMA') + '円（税抜）'}">2,380円(税抜)</span>
+								<br>
+							</th>
+							<th:block th:if="${stat.index % 3 == 2}">
+								</tr>
+							</th:block>
+						</th:block>
+					</tbody>
+				</table>
+
+			</div>
+		</div>
+
+		<!-- 検索していない場合 -->
+		<!-- pagination -->
+		<div th:unless="${session.url}" class="pages">
+			<nav class="page-nav">
+				<ul class="pager">
+					<li th:text="${session.page}" style="font-weight: bold; color: blue"></li>
+					<li class="previous"><span th:if="${session.page > 1}">
+							<a th:href="@{'/?page=' + ${session.page - 1}}">&larr; prev</a>
+						</span></li>
+					<li class="next" th:if="${session.page * 9} < ${session.count}"><a th:href="@{'/?page=' + ${session.page + 1}}">next &rarr;</a></li>
+				</ul>
+			</nav>
+		</div>
+
+		<!-- 検索している場合 -->
+		<!-- pagination -->
+		<div th:if="${session.url}" class="pages">
+			<nav class="page-nav">
+				<ul class="pager">
+					<li th:text="${session.searchPage}" style="font-weight: bold; color: blue"></li>
+					<li class="previous"><span th:if="${session.searchPage > 1}">
+							<a th:href="@{${session.url} + '?page=' + ${session.searchPage - 1}}">&larr; prev</a>
+						</span></li>
+					<li class="next" th:if="${session.searchPage * 9} < ${session.searchCount}"><a th:href="@{${session.url} + '?page=' + ${session.searchPage + 1}}">next &rarr;</a></li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+	<!-- end container -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script th:src="@{/js/bootstrap.min.js}"></script>
+	<script th:src="@{/js/item_list_curry.js}"></script>
+</body>
+</html>
